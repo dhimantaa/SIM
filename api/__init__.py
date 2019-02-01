@@ -7,13 +7,13 @@ import requests
 
 class Api(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, source, **kwargs):
         """
 
         :param source:
         :param instrument:
         """
-        self.__url = kwargs['source']
+        self.__url = source
         self.__instrument = kwargs['instrument']
 
     def _get(self, param=None):
