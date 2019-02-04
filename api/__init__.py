@@ -1,45 +1,52 @@
 """
-This module will query free sources to collect the base data feed
+This module will download base data from quandl
 """
-import sys
-import requests
+
+import os
+import source
+import zipfile
+import StringIO
+from api import Api
+import pandas as pd
 
 
-class Api(object):
+class Quandl:
 
-    def __init__(self, source, **kwargs):
+    def __init__(self, **kwargs):
         """
 
-        :param source:
-        :param instrument:
+        :param kwargs:
         """
-        self.__url = source
-        self.__instrument = kwargs['instrument']
+        self._url = source.QUANDL
+        self._api = Api(self._url)
+        self.symbol = kwargs['symbol']
 
-    def _get(self, param=None):
+    def bse_metadata(self):
         """
 
-        :param param:
         :return:
         """
-        try:
-            if param:
-                pass
-            else:
-                req = requests.get(self.__url+'/'+self.__instrument+'.csv')
-        except Exception as e:
-            print (e)
-            sys.exit()
+        self._url = source.BSE + '/metadata?api_key=' + source.QUANDL_API_KEY
 
-        if req.status_code == 200:
-            return req.text, req.status_code
+        data = self._api.apply(False, url=self._url)
+        zipfile.ZipFile(StringIO.StringIO(data[0])).extractall(os.path.join(os.path.dirname(__file__), 'tmp'))
+
+        if data[0]:
+            return pd.read_csv(os.path.join(os.path.dirname(__file__), 'tmp') + '/BSE_metadata.csv')
         else:
-            return None, req.status_code
+            raise BaseException
 
-    def _post(self, param=None):
+    def bse_data(self):
         """
 
-        :param param:
         :return:
         """
+        raise NotImplementedError
+
+    def bse_instrument(self):
+        """
+
+        :return:
+        """
+
         raise NotImplementedError
