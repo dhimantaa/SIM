@@ -7,6 +7,7 @@ import json
 import source
 import zipfile
 import StringIO
+import collections
 from api import Api
 import pandas as pd
 
@@ -21,9 +22,10 @@ class Quandl:
         self._url = source.QUANDL
         self._api = Api(self._url)
 
-    def bse_metadata(self):
+    def bse_metadata(self, format=None):
         """
 
+        :param format:
         :return:
         """
         self._url = source.BSE_META + '/metadata?api_key=' + source.QUANDL_API_KEY
@@ -32,7 +34,10 @@ class Quandl:
         zipfile.ZipFile(StringIO.StringIO(data[0])).extractall(os.path.join(os.path.dirname(__file__), 'meta'))
 
         if data[0]:
-            return pd.read_csv(os.path.join(os.path.dirname(__file__), 'meta') + '/BSE_metadata.csv')
+            if format == 'pandas':
+                return pd.read_csv(os.path.join(os.path.dirname(__file__), 'meta') + '/BSE_metadata.csv')
+            else:
+                return 'Saved under meta'
         else:
             raise BaseException
 
@@ -47,7 +52,7 @@ class Quandl:
             data = self._api.apply(False, url=self._url)
 
             if data[0]:
-                return json.loads(data[0])['dataset']['id']
+                return self._convert_to_dd(json.loads(data[0]))
             else:
                 return None
         else:
@@ -61,14 +66,83 @@ class Quandl:
         """
         if bse_id:
             self._url = source.BSE_ID + '/' + str(bse_id) + '/data'
+            print self._url
             data = self._api.apply(False, url=self._url)
 
             if data[0]:
-                return data[0]
+                return self._convert_to_dd(json.loads(data[0]))
             else:
                 return None
         else:
             return None
+
+    def save_data(self, refresh=True):
+        """
+
+        :param refresh:
+        :return:
+        """
+        if refresh:
+            df = self.bse_metadata('pandas')
+        else:
+            df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'meta') + '/BSE_metadata.csv')
+
+        for symbol in df['code']:
+            print symbol
+            bse_id = self.bse_id(symbol=symbol)['dataset/id'].iloc[0]
+            data = self.bse_data(bse_id=bse_id)
+            if isinstance(data, pd.DataFrame):
+                data.to_csv(os.path.join(os.path.dirname(__file__), 'data') + '/' + symbol)
+                print ('Saved data for {}'.format(symbol))
+            else:
+                print ('No data found for {}'.format(symbol))
+
+        raise NotImplementedError
+
+    def _convert_to_dd(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        output = collections.defaultdict(list)
+        for op in self._json_parser(indict=data):
+
+            output['/'.join(op[:-1])].append(op[-1])
+
+        pandas_data = pd.DataFrame()
+
+        for key in output.keys():
+            pandas_data[key] = pd.Series(output[key])
+
+        return pandas_data
+
+    def _json_parser(self, indict=None, pre=None):
+        """
+
+        :param indict:
+        :param pre:
+        :return:
+        """
+        pre = pre[:] if pre else []
+        if isinstance(indict, dict):
+            for key, value in indict.items():
+                if isinstance(value, dict):
+                    for d in self._json_parser(value, pre + [key]):
+                        yield d
+                elif isinstance(value, list) or isinstance(value, tuple):
+                    i = 0
+                    for v in value:
+                        if not (isinstance(v, list) or isinstance(v, dict) or isinstance(v, tuple)):
+                            yield pre + [key, v]
+                        else:
+                            for d in self._json_parser(v, pre + [key]):
+                                yield d
+                        i += 1
+                else:
+                    yield pre + [key, value]
+        else:
+            yield pre + [indict]
 
     def bse_instrument(self):
         """
