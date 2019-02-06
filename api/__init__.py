@@ -50,7 +50,7 @@ class Quandl:
         if symbol:
             self._url = source.BSE_ID + '/BSE/' + symbol + '/metadata'
             data = self._api.apply(False, url=self._url)
-
+            print data[1]
             if data[0]:
                 return self._convert_to_dd(json.loads(data[0]))
             else:
@@ -58,27 +58,35 @@ class Quandl:
         else:
             return None
 
-    def bse_data(self, bse_id=None):
+    def bse_data(self, bse_id=None, refresh_rate=None, format='json'):
         """
 
+        :param format:
+        :param refresh_rate:
         :param bse_id:
         :return:
         """
         if bse_id:
             self._url = source.BSE_ID + '/' + str(bse_id) + '/data'
             print self._url
-            data = self._api.apply(False, url=self._url)
+            data = self._api.apply(False, url=self._url, refresh_rate=refresh_rate)
 
             if data[0]:
-                return self._convert_to_dd(json.loads(data[0]))
+                if format == 'json':
+                    return json.loads(data[0])
+                else:
+                    return self._convert_to_dd(json.loads(data[0]))
             else:
                 return None
         else:
             return None
 
-    def save_data(self, refresh=True):
+    def save_data(self, refresh=True, refresh_symbol=False, refresh_rate=None, format='json'):
         """
 
+        :param format:
+        :param refresh_rate:
+        :param refresh_symbol:
         :param refresh:
         :return:
         """
@@ -89,15 +97,23 @@ class Quandl:
 
         for symbol in df['code']:
             print symbol
-            bse_id = self.bse_id(symbol=symbol)['dataset/id'].iloc[0]
-            data = self.bse_data(bse_id=bse_id)
-            if isinstance(data, pd.DataFrame):
-                data.to_csv(os.path.join(os.path.dirname(__file__), 'data') + '/' + symbol)
-                print ('Saved data for {}'.format(symbol))
+            if os.path.isfile(os.path.join(os.path.dirname(__file__),
+                                           'data') + '/' + format + '/' + symbol) and not refresh_symbol:
+                print ('Data already saved for {}'.format(symbol))
             else:
-                print ('No data found for {}'.format(symbol))
-
-        raise NotImplementedError
+                try:
+                    bse_id = self.bse_id(symbol=symbol)['dataset/id'].iloc[0]
+                    data = self.bse_data(bse_id=bse_id, refresh_rate=refresh_rate, format=format)
+                    if isinstance(data, pd.DataFrame):
+                        data.to_csv(os.path.join(os.path.dirname(__file__), 'data') + '/csv/' + symbol)
+                        print ('Saved data for {}'.format(symbol))
+                    elif format == 'json':
+                        with open(os.path.join(os.path.dirname(__file__), 'data') + '/json/' + symbol, 'w') as outfile:
+                            json.dump(data, outfile)
+                    else:
+                        print ('No data found for {}'.format(symbol))
+                except:
+                    pass
 
     def _convert_to_dd(self, data):
         """
@@ -107,7 +123,6 @@ class Quandl:
         """
         output = collections.defaultdict(list)
         for op in self._json_parser(indict=data):
-
             output['/'.join(op[:-1])].append(op[-1])
 
         pandas_data = pd.DataFrame()
