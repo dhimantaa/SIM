@@ -5,6 +5,7 @@ This module will download base data from quandl
 import os
 import json
 import source
+import proxy
 import zipfile
 import StringIO
 import collections
@@ -21,6 +22,9 @@ class Quandl:
         """
         self._url = source.QUANDL
         self._api = Api(self._url)
+        self._proxy = kwargs['proxy']
+        if self._proxy:
+            self._p = proxy.Proxy()
 
     def bse_metadata(self, format=None):
         """
@@ -49,8 +53,12 @@ class Quandl:
         """
         if symbol:
             self._url = source.BSE_ID + '/BSE/' + symbol + '/metadata'
-            data = self._api.apply(False, url=self._url)
+            if self._proxy:
+                data = self._p.use(self._url)
+            else:
+                data = self._api.apply(False, url=self._url)
             print data[1]
+
             if data[0]:
                 return self._convert_to_dd(json.loads(data[0]))
             else:
@@ -69,7 +77,10 @@ class Quandl:
         if bse_id:
             self._url = source.BSE_ID + '/' + str(bse_id) + '/data'
             print self._url
-            data = self._api.apply(False, url=self._url, refresh_rate=refresh_rate)
+            if self._proxy:
+                data = self._p.use(self._url)
+            else:
+                data = self._api.apply(False, url=self._url, refresh_rate=refresh_rate)
 
             if data[0]:
                 if format == 'json':
@@ -99,20 +110,27 @@ class Quandl:
             print symbol
             if os.path.isfile(os.path.join(os.path.dirname(__file__),
                                            'data') + '/' + format + '/' + symbol) and not refresh_symbol:
+
                 print ('Data already saved for {}'.format(symbol))
             else:
                 try:
                     bse_id = self.bse_id(symbol=symbol)['dataset/id'].iloc[0]
                     data = self.bse_data(bse_id=bse_id, refresh_rate=refresh_rate, format=format)
+
                     if isinstance(data, pd.DataFrame):
+
                         data.to_csv(os.path.join(os.path.dirname(__file__), 'data') + '/csv/' + symbol)
                         print ('Saved data for {}'.format(symbol))
                     elif format == 'json':
-                        with open(os.path.join(os.path.dirname(__file__), 'data') + '/json/' + symbol, 'w') as outfile:
+
+                        with open(os.path.join(os.path.dirname(__file__), 'data') + '/json/' + symbol,
+                                  'w') as outfile:
                             json.dump(data, outfile)
                     else:
                         print ('No data found for {}'.format(symbol))
-                except:
+
+                except Exception as e:
+                    print e
                     pass
 
     def _convert_to_dd(self, data):
