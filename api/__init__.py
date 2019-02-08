@@ -3,6 +3,7 @@ This module will download base data from quandl
 """
 
 import os
+import sys
 import json
 import source
 import proxy
@@ -76,7 +77,6 @@ class Quandl:
         """
         if bse_id:
             self._url = source.BSE_ID + '/' + str(bse_id) + '/data'
-            print self._url
             if self._proxy:
                 data = self._p.use(self._url)
             else:
@@ -92,7 +92,7 @@ class Quandl:
         else:
             return None
 
-    def save_data(self, refresh=True, refresh_symbol=False, refresh_rate=None, format='json'):
+    def save_data(self, refresh=False, refresh_symbol=False, refresh_rate=None, format='json'):
         """
 
         :param format:
@@ -157,6 +157,7 @@ class Quandl:
         :param pre:
         :return:
         """
+
         pre = pre[:] if pre else []
         if isinstance(indict, dict):
             for key, value in indict.items():

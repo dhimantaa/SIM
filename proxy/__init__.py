@@ -95,10 +95,14 @@ class Proxy(object):
         try:
             hdr = random.choice([hdr1, hdr2, hdr3, hdr4, hdr5, hdr6])
             req = urllib2.Request(browse_url, headers=hdr)
-
+            print browse_url, ip
             cj = cookielib.CookieJar()
             proxy = urllib2.ProxyHandler({'http': ip})
-            requested = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy).open(req, timeout=10)
+            try:
+                requested = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy).open(req, timeout=10)
+            except:
+                return None
+
             return__code = requested.getcode()
 
             if return__code != 429:
@@ -117,16 +121,16 @@ class Proxy(object):
 
         :return:
         """
-
         if ips[self._ip_index] not in self._block_list:
             r = self._proxy(browse_url=browse_url, ip=ips[self._ip_index])
         else:
             ip_crawler()
             self._ip_index = 0
 
-        if not r or r[1] == 429:
+        if r is None or r[1] == 429:
             self._block_list.append(ips[self._ip_index])
             self._ip_index += 1
-            return self._proxy(browse_url=browse_url, ip=ips[self._ip_index])
+            print 'Set new ip ', ips[self._ip_index]
+            return self.use(browse_url=browse_url)
         else:
             return r
