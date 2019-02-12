@@ -10,14 +10,16 @@ import json
 
 class Indicator(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, symbol='BOM500002', db=None, datatype='json'):
         """
 
-        :param kwargs:
+        :param symbol:
+        :param db:
+        :param datatype:
         """
-        self._symbol = kwargs['symbol']
-        self._crawl = kwargs['db']
-        self._data_type = kwargs['dtype']
+        self._symbol = symbol
+        self._crawl = db
+        self._data_type = datatype
 
     def feed(self):
         """
@@ -25,6 +27,9 @@ class Indicator(object):
         :return:
         """
         if self._crawl:
+            """
+            !! Under construction !!
+            """
             pass
         else:
             if self._data_type == 'json':
@@ -40,6 +45,13 @@ class Indicator(object):
         """
         This method will have all the logic
         for the corresponding technical indicators
+        :return:
+        """
+        raise NotImplementedError
+
+    def strategy(self):
+        """
+
         :return:
         """
         raise NotImplementedError

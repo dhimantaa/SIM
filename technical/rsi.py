@@ -30,29 +30,34 @@ class Rsi(Indicator):
 
         self._data['Date'] = pd.to_datetime(self._data['Date'], format='%Y-%m-%d')
 
-        self._data = self._data[[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
-                                 (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]]
+        if startDate and endDate:
+            self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
+                                    (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
+            print self._data
+        else:
+            self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
+                                    (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
-        delta = self._data['Close'].diff()[1:]
-
-        up, down = delta.copy(), delta.copy()
-        up[up < 0] = 0
-        down[down > 0] = 0
+        positive, negative = self._data['Close'].diff()[1:].copy(), self._data['Close'].diff()[1:].copy()
+        positive[positive < 0] = 0
+        negative[negative > 0] = 0
 
         if sma:
             # Calculate the SMA
-            roll_up2 = pd.rolling_mean(up, window_length)
-            roll_down2 = pd.rolling_mean(down.abs(), window_length)
+            roll_up2 = pd.rolling_mean(positive, window_length)
+            roll_down2 = pd.rolling_mean(negative.abs(), window_length)
 
             # Calculate the RSI based on SMA
             rsi_sma = roll_up2 / roll_down2
-            return 100.0 - (100.0 / (1.0 + rsi_sma))
+            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rsi_sma))
+            return self._data
         else:
             # Calculate the EWMA
 
-            roll_up1 = pd.stats.moments.ewma(up, window_length)
-            roll_down1 = pd.stats.moments.ewma(down.abs(), window_length)
+            roll_up1 = pd.stats.moments.ewma(positive, window_length)
+            roll_down1 = pd.stats.moments.ewma(negative.abs(), window_length)
 
             # Calculate the RSI based on EWMA
             rsi_ewma = roll_up1 / roll_down1
-            return 100.0 - (100.0 / (1.0 + rsi_ewma))
+            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rsi_ewma))
+            return self._data
