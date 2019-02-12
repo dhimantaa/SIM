@@ -48,8 +48,8 @@ class Rsi(Indicator):
             roll_down2 = pd.rolling_mean(negative.abs(), window_length)
 
             # Calculate the RSI based on SMA
-            rsi_sma = roll_up2 / roll_down2
-            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rsi_sma))
+            rs = roll_up2 / roll_down2
+            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rs))
             return self._data
         else:
             # Calculate the EWMA
@@ -58,6 +58,6 @@ class Rsi(Indicator):
             roll_down1 = pd.stats.moments.ewma(negative.abs(), window_length)
 
             # Calculate the RSI based on EWMA
-            rsi_ewma = roll_up1 / roll_down1
-            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rsi_ewma))
+            rs = roll_up1 / roll_down1
+            self._data['rsi'] = 100.0 - (100.0 / (1.0 + rs))
             return self._data

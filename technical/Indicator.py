@@ -49,16 +49,3 @@ class Indicator(object):
         """
         raise NotImplementedError
 
-    def strategy(self):
-        """
-
-        :return:
-        """
-        raise NotImplementedError
-
-    def run(self):
-        """
-
-        :return:
-        """
-        self.simulation(plot=True)
