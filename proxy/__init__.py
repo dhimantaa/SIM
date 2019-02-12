@@ -2,6 +2,8 @@
 This module to scrap different ip to set the proxy
 """
 
+__author__ = "dhimantarun19@gmail.com"
+
 import lxml
 import random
 import urllib2

@@ -2,8 +2,9 @@
 This module will download base data from quandl
 """
 
+__author__ = 'dhimantarun19@gmail.com'
+
 import os
-import sys
 import json
 import source
 import proxy

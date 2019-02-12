@@ -1,6 +1,9 @@
 """
 This module will query free sources to collect the base data feed
 """
+
+__author__ = "dhimantarun19@gmail.com"
+
 import sys
 import time
 import requests
