@@ -1,0 +1,9 @@
+*.pyc
+*.csv
+api/*.pyc
+feed/*.pyc
+plotter/*.pyc
+proxy/*.pyc
+technical/*.pyc
+test/*.pyc
+.idea*
