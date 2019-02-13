@@ -37,17 +37,28 @@ class Macd(Indicator):
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
         # Calculating 9 day moving average for the single line
-        self._data['sma_9'] = pd.rolling_mean(self._data['Close'], 9)
+        self._data['sma_9'] = self._data['Close'].rolling(window=9, center=False).mean()
+        # self._data['sma_9'] = pd.rolling_mean(self._data['Close'], 9)
 
         # Calculating 12 day Exponential moving average for the base line
-        self._data['ema_12'] = pd.stats.moments.ewma(self._data['Close'], 12)
+        self._data['ema_12'] = self._data['Close'].ewm(ignore_na=False,
+                                                       min_periods=0,
+                                                       adjust=True,
+                                                       com=12).mean()
+        # self._data['ema_12'] = pd.stats.moments.ewma(self._data['Close'], 12)
 
         # Calculating 26 day Exponential moving average for the base line
-        self._data['ema_26'] = pd.stats.moments.ewma(self._data['Close'], 26)
+        self._data['ema_26'] = self._data['Close'].ewm(ignore_na=False,
+                                                       min_periods=0,
+                                                       adjust=True,
+                                                       com=26).mean()
+        # self._data['ema_26'] = pd.stats.moments.ewma(self._data['Close'], 26)
 
         # Calculating macd
         self._data['macd'] = self._data['ema_12'] - self._data['ema_26']
 
-        return self._data
+        param = {'fields': {'groups': [{'y': ['Close'], 'x': ['Date']},
+                                       {'y': ['sma_9', 'macd'], 'x': ['Date']},
+                                       {'y': ['No. of Shares'], 'x': ['Date']}]}}
 
-
+        return self._data, param

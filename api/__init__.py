@@ -7,7 +7,6 @@ __author__ = 'dhimantarun19@gmail.com'
 import os
 import json
 import source
-import proxy
 import zipfile
 import StringIO
 import collections

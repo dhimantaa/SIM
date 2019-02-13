@@ -44,8 +44,11 @@ class Rsi(Indicator):
 
         if sma:
             # Calculate the SMA
-            roll_up2 = pd.rolling_mean(positive, window_length)
-            roll_down2 = pd.rolling_mean(negative.abs(), window_length)
+            roll_up2 = positive.rolling(window=9, center=False).mean()
+            roll_down2 = negative.abs().rolling(window=9, center=False).mean()
+
+            # roll_up2 = pd.rolling_mean(positive, window_length)
+            # roll_down2 = pd.rolling_mean(negative.abs(), window_length)
 
             # Calculate the RSI based on SMA
             rs = roll_up2 / roll_down2
@@ -53,11 +56,21 @@ class Rsi(Indicator):
             return self._data
         else:
             # Calculate the EWMA
+            roll_up1 = positive.ewm(ignore_na=False,
+                                    min_periods=0,
+                                    adjust=True,
+                                    com=window_length).mean()
+            roll_down1 = negative.abs().ewm(ignore_na=False,
+                                            min_periods=0,
+                                            adjust=True,
+                                            com=26).mean()
 
-            roll_up1 = pd.stats.moments.ewma(positive, window_length)
-            roll_down1 = pd.stats.moments.ewma(negative.abs(), window_length)
+            # roll_up1 = pd.stats.moments.ewma(positive, window_length)
+            # roll_down1 = pd.stats.moments.ewma(negative.abs(), window_length)
 
             # Calculate the RSI based on EWMA
             rs = roll_up1 / roll_down1
             self._data['rsi'] = 100.0 - (100.0 / (1.0 + rs))
-            return self._data
+            param = {'fields': {'groups': [{'y': ['Close', 'rsi'], 'x': ['Date']},
+                                           {'y': ['No. of Shares'], 'x': ['Date']}]}}
+            return self._data, param
