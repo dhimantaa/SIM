@@ -71,6 +71,6 @@ class Rsi(Indicator):
             # Calculate the RSI based on EWMA
             rs = roll_up1 / roll_down1
             self._data['rsi'] = 100.0 - (100.0 / (1.0 + rs))
-            param = {'fields': {'groups': [{'y': ['Close', 'rsi'], 'x': ['Date']},
+            param = {'fields': {'groups': [{'y': ['rsi'], 'x': ['Date']},
                                            {'y': ['No. of Shares'], 'x': ['Date']}]}}
             return self._data, param

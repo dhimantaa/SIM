@@ -6,8 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-#from matplotlib import style
-#style.use('fivethirtyeight')
+from matplotlib import style
+style.use('fivethirtyeight')
 
 
 class Plotter(object):
@@ -41,10 +41,15 @@ class Plotter(object):
         for i in range(len(group)):
 
             if len(group[i]['y']) == 2:
-
-                axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos, 0),
-                                                        rowspan=5,
-                                                        colspan=1)
+                if prev_pos:
+                    axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length + 2*plt_length, 1), (prev_pos+2, 0),
+                                                            rowspan=5,
+                                                            colspan=1)
+                else:
+                    axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length + 2*plt_length, 1), (prev_pos, 0),
+                                                            rowspan=5,
+                                                            colspan=1)
+                    
                 prev_pos += 5
                 axis['ax_' + str(i)].set_ylabel(group[i]['y'][0])
 
@@ -55,11 +60,15 @@ class Plotter(object):
                 axis['ax_v' + str(i)].set_ylabel(group[i]['y'][1])
 
                 axis['ax_v' + str(i)].plot(np.array(self._data[group[i]['x'][0]]),
-                                           np.array(self._data[group[i]['y'][1]]))
-                axis['ax_v' + str(i)].fill(facecolor='#0079a3')
+                                           np.array(self._data[group[i]['y'][1]]), color='r')
+                axis['ax_v' + str(i)].fill(facecolor='r')
 
             else:
-                axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos+1, 0), rowspan=5, colspan=1)
+                if prev_pos:
+                    axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos+2, 0), rowspan=5, colspan=1)
+                else:
+                    axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos, 0), rowspan=5, colspan=1)
+                
                 prev_pos += 5
                 axis['ax_' + str(i)].set_ylabel(group[i]['y'][0])
                 axis['ax_' + str(i)].plot(np.array(self._data[group[i]['x'][0]]),
