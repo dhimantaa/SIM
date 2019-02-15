@@ -1,6 +1,7 @@
 *.pyc
 *.csv
 api/*.pyc
+api/data/*
 feed/*.pyc
 plotter/*.pyc
 proxy/*.pyc

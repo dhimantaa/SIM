@@ -5,13 +5,16 @@ This module will download base data from quandl
 __author__ = 'dhimantarun19@gmail.com'
 
 import os
+import sys
 import json
 import source
 import zipfile
 import StringIO
+import warnings
 import collections
 from api import Api
 import pandas as pd
+from ..proxy import Proxy
 
 
 class Quandl:
@@ -23,9 +26,16 @@ class Quandl:
         """
         self._url = source.QUANDL
         self._api = Api(self._url)
-        self._proxy = kwargs['proxy']
+        if kwargs.keys():
+            self._proxy = kwargs['proxy']
+            self.symbol = kwargs['symbol']
+        else:
+            warnings.warn('Empty argument given')
+            self._proxy = True
+            self.symbol = 'BOM500002'
+
         if self._proxy:
-            self._p = proxy.Proxy()
+            self._p = Proxy()
 
     def bse_metadata(self, format=None):
         """
@@ -58,10 +68,12 @@ class Quandl:
                 data = self._p.use(self._url)
             else:
                 data = self._api.apply(False, url=self._url)
-            print data[1]
 
-            if data[0]:
+            if data[1] == 200:
                 return self._convert_to_dd(json.loads(data[0]))
+            elif data[1] == 404:
+                warnings.warn(str(data[0]) + ' : ' + symbol)
+                sys.exit()
             else:
                 return None
         else:
@@ -82,19 +94,23 @@ class Quandl:
             else:
                 data = self._api.apply(False, url=self._url, refresh_rate=refresh_rate)
 
-            if data[0]:
+            if data[1] == 200:
                 if format == 'json':
                     return json.loads(data[0])
                 else:
                     return self._convert_to_dd(json.loads(data[0]))
+            elif data[1] == 404:
+                warnings.warn(str(data[0]) + ' : ' + bse_id)
+                sys.exit()
             else:
                 return None
         else:
             return None
 
-    def save_data(self, refresh=False, refresh_symbol=False, refresh_rate=None, format='json'):
+    def save_data(self, refresh=False, refresh_symbol=False, refresh_rate=None, format='json', single=False):
         """
 
+        :param single:
         :param format:
         :param refresh_rate:
         :param refresh_symbol:
@@ -103,10 +119,14 @@ class Quandl:
         """
         if refresh:
             df = self.bse_metadata('pandas')
+            symbol_list = df['code']
+        elif single:
+            symbol_list = [self.symbol]
         else:
             df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'meta') + '/BSE_metadata.csv')
+            symbol_list = df['code']
 
-        for symbol in df['code']:
+        for symbol in symbol_list:
             print symbol
             if os.path.isfile(os.path.join(os.path.dirname(__file__),
                                            'data') + '/' + format + '/' + symbol) and not refresh_symbol:

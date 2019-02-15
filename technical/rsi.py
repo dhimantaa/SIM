@@ -14,8 +14,8 @@ class Rsi(Indicator):
 
     def __init__(self, **kwargs):
         super(Rsi, self).__init__(**kwargs)
-        self._data = pd.DataFrame(data=self.feed()[0]["dataset_data"]["data"],
-                                  columns=self.feed()[0]["dataset_data"]["column_names"])
+        self._data = pd.DataFrame(data=self.feed()["dataset_data"]["data"],
+                                  columns=self.feed()["dataset_data"]["column_names"])
 
     def simulation(self, plot=None, startDate=None, endDate=None, window_length=14, sma=False):
         """
@@ -33,7 +33,6 @@ class Rsi(Indicator):
         if startDate and endDate:
             self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
                                     (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
-            print self._data
         else:
             self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]

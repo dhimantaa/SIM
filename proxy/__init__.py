@@ -97,13 +97,13 @@ class Proxy(object):
         try:
             hdr = random.choice([hdr1, hdr2, hdr3, hdr4, hdr5, hdr6])
             req = urllib2.Request(browse_url, headers=hdr)
-            print browse_url, ip
+
             cj = cookielib.CookieJar()
             proxy = urllib2.ProxyHandler({'http': ip})
             try:
                 requested = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy).open(req, timeout=10)
-            except:
-                return None
+            except urllib2.HTTPError as err:
+                return err.reason, err.code
 
             return__code = requested.getcode()
 
