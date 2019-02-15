@@ -4,7 +4,7 @@ def readme():
     with open('README.md') as f:
         return f.read()
 
-setup(name='SIM',
+setup(name='sim',
       version='0.0.1',
       description='Test technical indicator',
       long_description='Test technical indicator',
@@ -17,11 +17,15 @@ setup(name='SIM',
       author='dhimantaa',
       author_email='dhimantarun19@gmail.com',
       license='Apache License 2.0',
-      packages=['api',
-                'feed',
-                'plotter',
-                'proxy',
-                'technical'],
+      packages=[
+          'sim',
+          'sim.api',
+          'sim.technical',
+          'sim.plotter',
+          'sim.feed',
+          'sim.proxy',
+          'sim.test',
+      ],
       install_requires=[
           'pandas',
           'requests',
