@@ -3,8 +3,8 @@ SIM
 
 To use this package
 ----
-```
-import SIM
+```python
+import sim
 symbol='BOM500010'
 startDate = '20170601'
 endDate = '20190213'
