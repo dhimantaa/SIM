@@ -1,6 +1,14 @@
 SIM
 --------
 
+Installation
+--------
+```bash
+git clone https://github.com/dhimantaa/SIM.git
+cd SIM
+pip install .
+```
+
 To use this package
 ----
 ```python
