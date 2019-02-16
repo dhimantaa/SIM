@@ -9,6 +9,16 @@ cd SIM
 pip install .
 ```
 
+OR
+--------
+```bash
+cd SIM
+```
+```python
+python setup.py install
+```
+
+
 To use this package
 ----
 ```python
