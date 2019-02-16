@@ -19,7 +19,7 @@ python setup.py install
 ```
 
 
-To use this package
+How to use this package
 ----
 ```python
 import sim
