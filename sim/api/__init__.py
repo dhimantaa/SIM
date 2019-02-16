@@ -153,6 +153,14 @@ class Quandl:
                     print e
                     pass
 
+    def save_tmp(self):
+        """
+        This function will crawl data in the production
+        :return: The data in json object
+        """
+        bse_id = self.bse_id(symbol=self.symbol)['dataset/id'].iloc[0]
+        return self.bse_data(bse_id=bse_id, refresh_rate=None, format='json')
+
     def _convert_to_dd(self, data):
         """
 
