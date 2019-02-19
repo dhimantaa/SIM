@@ -35,10 +35,6 @@ class Macd(Indicator):
             self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
-        # Calculating 9 day moving average for the single line
-        self._data['sma_9'] = self._data['Close'].rolling(window=9, center=False).mean()
-        # self._data['sma_9'] = pd.rolling_mean(self._data['Close'], 9)
-
         # Calculating 12 day Exponential moving average for the base line
         self._data['ema_12'] = self._data['Close'].ewm(ignore_na=False,
                                                        min_periods=0,
@@ -55,6 +51,9 @@ class Macd(Indicator):
 
         # Calculating macd
         self._data['macd'] = self._data['ema_12'] - self._data['ema_26']
+
+        # Calculating 9 day moving average for the single line
+        self._data['sma_9'] = self._data['macd'].rolling(window=9, center=False).mean()
 
         param = {'fields': {'groups': [{'y': ['Close'], 'x': ['Date']},
                                        {'y': ['sma_9', 'macd'], 'x': ['Date']},
