@@ -41,3 +41,10 @@ df, param = sim.technical.macd.Macd(symbol=symbol).simulation(startDate=startDat
 sim.plotter.Plotter(data=df, symbol=symbol,param=param).plot()
 ```
 ![alt text](https://raw.githubusercontent.com/dhimantaa/SIM/master/doc/macd.png)
+```python
+# To run the Bollinger simulation
+df, param = sim.technical.bollinger.Bollinger(symbol=symbol).simulation(startDate='20171201', endDate='20190215')
+# To plot the Bollinger simulation
+sim.plotter.Plotter(data=df, symbol=symbol,param=param).plot()
+```
+![alt text](https://raw.githubusercontent.com/dhimantaa/SIM/master/doc/bollinger.png)
