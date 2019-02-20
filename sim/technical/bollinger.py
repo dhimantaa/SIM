@@ -47,7 +47,7 @@ class Bollinger(Indicator):
         # Calculating the Lower band of bollinger band
         self._data['lower_band'] = self._data['sma_20'] - 2 * self._data['std_20']
 
-        param = {'fields': {'groups': [{'y': ['Close', 'sma_20', 'upper_band', 'lower_band'], 'x': ['Date']},
+        param = {'fields': {'groups': [{'y': [['Close', 'sma_20', 'upper_band', 'lower_band']], 'x': ['Date']},
                                        {'y': ['No. of Shares'], 'x': ['Date']}]}}
 
         return self._data, param

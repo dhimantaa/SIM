@@ -70,7 +70,24 @@ class Plotter(object):
                 axis['ax_v' + str(i)].set_title(self._symbol)
 
             else:
-                if group[i]['y'][0] == 'Close':
+                if isinstance(group[i]['y'][0], list):
+                    if prev_pos:
+                        axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos + 2, 0), rowspan=5,
+                                                                colspan=1)
+                    else:
+                        axis['ax_' + str(i)] = plt.subplot2grid((5 * plt_length, 1), (prev_pos, 0), rowspan=5,
+                                                                colspan=1)
+
+                    axis['ax_' + str(i)].set_title(self._symbol)
+
+                    prev_pos += 5
+
+                    axis['ax_' + str(i)].set_ylabel(group[i]['y'][0])
+
+                    for field in group[i]['y'][0]:
+                        axis['ax_' + str(i)].plot(np.array(self._data[group[i]['x'][0]]),
+                                                  np.array(self._data[field]))
+                elif group[i]['y'][0] == 'Close':
                     try:
                         buy = self._data[self._data['macd'] <= self._data['sma_9']]
                         sell = self._data[self._data['macd'] >= self._data['sma_9']]
@@ -107,17 +124,3 @@ class Plotter(object):
                     axis['ax_' + str(i)].set_ylabel(group[i]['y'][0])
                     axis['ax_' + str(i)].plot(np.array(self._data[group[i]['x'][0]]),
                                               np.array(self._data[group[i]['y'][0]]))
-
-
-class Bollinger_plot(Plotter):
-
-    def __init__(self, **kwargs):
-        super(Bollinger_plot, self).__init__(**kwargs)
-
-    def plot(self):
-        """
-
-        :return:
-        """
-
-        pass
