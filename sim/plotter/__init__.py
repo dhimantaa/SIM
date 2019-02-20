@@ -107,3 +107,17 @@ class Plotter(object):
                     axis['ax_' + str(i)].set_ylabel(group[i]['y'][0])
                     axis['ax_' + str(i)].plot(np.array(self._data[group[i]['x'][0]]),
                                               np.array(self._data[group[i]['y'][0]]))
+
+
+class Bollinger_plot(Plotter):
+
+    def __init__(self, **kwargs):
+        super(Bollinger_plot, self).__init__(**kwargs)
+
+    def plot(self):
+        """
+
+        :return:
+        """
+
+        pass
