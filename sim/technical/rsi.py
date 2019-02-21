@@ -37,6 +37,8 @@ class Rsi(Indicator):
             self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
+        self._data = self._data.sort_values(by=['Date'])
+
         positive, negative = self._data['Close'].diff()[1:].copy(), self._data['Close'].diff()[1:].copy()
         positive[positive < 0] = 0
         negative[negative > 0] = 0

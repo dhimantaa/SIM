@@ -35,6 +35,8 @@ class Macd(Indicator):
             self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
+        self._data = self._data.sort_values(by=['Date'])
+
         # Calculating 12 day Exponential moving average for the base line
         self._data['ema_12'] = self._data['Close'].ewm(ignore_na=False,
                                                        min_periods=0,

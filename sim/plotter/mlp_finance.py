@@ -1,8 +1,11 @@
 """
 This module is taken from the https://github.com/matplotlib/mpl_finance
 """
+
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+
+__forkby__ = 'dhimantarun19@gmail.com'  # type: unicode
 
 import numpy as np
 from matplotlib import colors as mcolors

@@ -35,6 +35,8 @@ class Bollinger(Indicator):
             self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
                                     (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
+        self._data = self._data.sort_values(by=['Date'])
+
         # Calculating the 20-day SMA
         self._data['sma_20'] = self._data['Close'].rolling(window=20, center=False).mean()
 
