@@ -28,13 +28,6 @@ class Bollinger(Indicator):
 
         self._data['Date'] = pd.to_datetime(self._data['Date'], format='%Y-%m-%d')
 
-        if startDate and endDate:
-            self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
-                                    (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
-        else:
-            self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
-                                    (self._data['Date'] < datetime.datetime(2012, 1, 1))]
-
         self._data = self._data.sort_values(by=['Date'])
 
         # Calculating the 20-day SMA
@@ -51,5 +44,12 @@ class Bollinger(Indicator):
 
         param = {'fields': {'groups': [{'y': [['Close', 'sma_20', 'upper_band', 'lower_band']], 'x': ['Date']},
                                        {'y': ['No. of Shares'], 'x': ['Date']}]}}
+
+        if startDate and endDate:
+            self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
+                                    (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
+        else:
+            self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
+                                    (self._data['Date'] < datetime.datetime(2012, 1, 1))]
 
         return self._data, param

@@ -30,13 +30,6 @@ class Rsi(Indicator):
 
         self._data['Date'] = pd.to_datetime(self._data['Date'], format='%Y-%m-%d')
 
-        if startDate and endDate:
-            self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
-                                    (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
-        else:
-            self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
-                                    (self._data['Date'] < datetime.datetime(2012, 1, 1))]
-
         self._data = self._data.sort_values(by=['Date'])
 
         positive, negative = self._data['Close'].diff()[1:].copy(), self._data['Close'].diff()[1:].copy()
@@ -75,4 +68,12 @@ class Rsi(Indicator):
             param = {'fields': {'groups': [{'y': ['Close'], 'x': ['Date']},
                                            {'y': ['rsi'], 'x': ['Date']},
                                            {'y': ['No. of Shares'], 'x': ['Date']}]}}
+
+            if startDate and endDate:
+                self._data = self._data[(self._data['Date'] > datetime.datetime.strptime(startDate, '%Y%m%d')) &
+                                        (self._data['Date'] < datetime.datetime.strptime(endDate, '%Y%m%d'))]
+            else:
+                self._data = self._data[(self._data['Date'] > datetime.datetime(2010, 1, 1)) &
+                                        (self._data['Date'] < datetime.datetime(2012, 1, 1))]
+
             return self._data, param
