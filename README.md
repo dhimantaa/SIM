@@ -1,6 +1,9 @@
 SIM
 --------
 
+[![Build Status](https://travis-ci.com/dhimantaa/SIM.svg?branch=master)](https://travis-ci.com/dhimantaa/SIM)
+
+
 Installation
 --------
 ```bash
