@@ -34,5 +34,6 @@ setup(name='sim',
           'numpy',
           'matplotlib'
       ],
+      test_suite="sim.test.get_tests",
       include_package_data=True,
       zip_safe=False)
